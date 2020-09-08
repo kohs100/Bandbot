@@ -1,6 +1,3 @@
-# bandchat API
-
-```
 import bandchat
 
 bot = bandchat.Client("https://band.us/band/55800178/chat/CP2C7U")
@@ -20,10 +17,3 @@ def onchat(usr_i, str_i):
         return []
 
 bot.run()
-```
-
-## Client
-```
-class bandchat.Client(url, url, get_rate = 0.5, refresh_rate = 1800)
-```
-Represents a client connection that connects to band chatting. This class is used to interact with abstracted band chatting interfaces.
