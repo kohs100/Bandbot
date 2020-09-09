@@ -7,6 +7,13 @@ import requests as r
 
 import bandchat
 
+parser = argparse.ArgumentParser(
+    description='Example to use bandchat pseudoAPI')
+parser.add_argument('url')
+
+file_endpoint = parser.parse_args().url + "/file"
+api_endpoint = parser.parse_args().url + "/service"
+
 def sha256(path, blocksize=1024):
     file_hash = hashlib.sha256()
     with open(path, 'rb') as f:
@@ -24,7 +31,7 @@ def getFile(content):
 
     f_name = content["filename"]
     f_hash = content["filehash"]
-    f_uri = content["fileuri"]
+    f_uri = file_endpoint + content["fileuri"]
 
     if glob.glob(f_name):
         if sha256(f_name) == f_hash:
@@ -34,18 +41,16 @@ def getFile(content):
     else:
         dlFile(f_uri, f_name)
 
-
-parser = argparse.ArgumentParser(
-    description='Example to use bandchat pseudoAPI')
-parser.add_argument('url')
-
-api_endpoint = parser.parse_args().url
-
 bot = bandchat.Client("https://band.us/band/55800178/chat/CP2C7U")
+
+@bot.on_ready
+def donothing():
+    return []
 
 @bot.on_chat
 def bot_onchat(usr_i, str_i):
-    req = {
+    req = \
+    {
         "type": "chat",
         "content": {
                 "user": usr_i,
@@ -54,7 +59,7 @@ def bot_onchat(usr_i, str_i):
     }
     headers = {'Content-Type': 'application/json'}
     try:
-        res = r.get(api_endpoint, data=json.dumps(req), headers=headers)
+        res = r.post(api_endpoint, data=json.dumps(req), headers=headers)
     except:
         print("Connection to bandbot backend endpoint failed.")
         return []
@@ -63,15 +68,16 @@ def bot_onchat(usr_i, str_i):
         res = res.json()
         response = []
         for resp in res:
+            print(resp)
             if resp["type"] == "chat":
-                response.append("chat", resp["content"])
+                response.append(("chat", resp["content"]))
             elif resp["type"] == "image":
-                getFile(resp["content"])
-                response.append("image", resp["content"]["filename"])
+                if getFile(resp["content"]):
+                    response.append(("image", resp["content"]["filename"]))
             elif resp["type"] == "file":
-                getFile(resp["content"])
+                getFile(resp["content"])                
             elif resp["type"] == "change":
-                response.append("change", resp["content"]["uri"])
+                response.append(("change", resp["content"]["uri"]))
             else:
                 print("Unknown response type: ", resp["type"])
                 return []
@@ -79,3 +85,7 @@ def bot_onchat(usr_i, str_i):
     else:
         print("status code not 200")
         return []
+
+
+if __name__ == "__main__":
+    bot.run()
