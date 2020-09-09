@@ -29,26 +29,28 @@ def getFile(content):
             res = r.get(uri)
             f.write(res.content)
 
-    f_name = content["filename"]
-    f_hash = content["filehash"]
-    f_uri = file_endpoint + content["fileuri"]
+    try:
+        f_name = content["filename"]
+        f_hash = content["filehash"]
+        f_uri = file_endpoint + content["fileuri"]
 
-    if glob.glob(f_name):
-        if sha256(f_name) == f_hash:
-            pass
+        if glob.glob(f_name):
+            if sha256(f_name) == f_hash:
+                pass
+            else:
+                dlFile(f_uri, f_name)
         else:
             dlFile(f_uri, f_name)
-    else:
-        dlFile(f_uri, f_name)
+        
+        return True
+    except Exception as e:
+        print("Error at getFile", e)
+        return False
 
 bot = bandchat.Client("https://band.us/band/55800178/chat/CP2C7U")
 
-@bot.on_ready
-def donothing():
-    return []
-
-@bot.on_chat
-def bot_onchat(usr_i, str_i):
+@bot.on_event
+def on_chat(usr_i, str_i):
     req = \
     {
         "type": "chat",
@@ -85,7 +87,6 @@ def bot_onchat(usr_i, str_i):
     else:
         print("status code not 200")
         return []
-
 
 if __name__ == "__main__":
     bot.run()
