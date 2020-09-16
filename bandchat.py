@@ -8,6 +8,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver import Chrome
 from selenium.webdriver import ChromeOptions
+from selenium.webdriver.chrome.options import Options
 
 class BandchatException(Exception):
     def __init__(self, msg = "Bandchat module error"):
@@ -26,16 +27,18 @@ class InvalidEventException(BandchatException):
         super().__init__("Invalid on_event name")
 
 class Client():
-    def __init__(self, url, get_rate = 0.5, refresh_rate = 1800, cli_login = True, events = []):
+    def __init__(self, url, get_rate=0.5, refresh_rate=1800, cli_login=True, options=None):
         self.chatURL = url
         self.refresh_rate = refresh_rate
         self.get_rate = get_rate
         
-        self.timer_events = []
         self.on_chat = lambda x,y: []
         self.on_ready = lambda :[]
 
-        options = ChromeOptions()
+        if options == None:
+            print("Starting with default chrome options...")
+            options = ChromeOptions()
+
         options.add_argument('--disable-extensions')
         options.add_argument("--no-sandbox")
         if cli_login:
@@ -134,11 +137,15 @@ class Client():
 
     def _get_HTML(self):
         soup = BeautifulSoup(self.driver.page_source, 'html.parser')
-        chatlist = soup.find_all("span", class_="txt")
-        userlist = soup.find_all("button", class_="author")
-        if len(chatlist) != len(userlist):
-            raise ChatLoadException
-        return len(chatlist), chatlist, userlist
+        chat_found = soup.find_all(attrs={"data-viewname":"DChattingRoomTextMessageItemView"})
+        chat_list = []
+
+        for chat in chat_found:
+            chat_content = chat.find_all("span", class_="_messageContent")[0].text
+            chat_user = chat.find_all("button", class_="author")[0].text
+            chat_list.append((chat_user, chat_content))
+
+        return chat_list
 
     def _parse_response(self, res_lst):
         for res in res_lst:
@@ -158,29 +165,22 @@ class Client():
         else:
             raise InvalidEventException
 
-    def timer_event(self, period):
-        def decorator(ifunction):
-            event_tuple = (period, ifunction)
-            self.timer_events.append(event_tuple)
-            return ifunction
-        return decorator
-
     def run(self):
         self._refresh()
-        recent_chat, _, _ = self._get_HTML()
+        recent_chat = len(self._get_HTML())
         self._parse_response(self.on_ready())
 
         while True:
             if time() >= self.next_refresh:
                 self._refresh()
-            len_chat, i_chat, i_user = self._get_HTML()
+            chat_list = self._get_HTML()
+            len_chat = len(chat_list)
 
-            for i in range(recent_chat - len_chat, 0):
-                str_i = i_chat[i].text
-                usr_i = i_user[i].text
-                print(usr_i + ":" + str_i)
-
-                self._parse_response(self.on_chat(usr_i, str_i))
+            if len_chat > recent_chat:
+                for i in range(recent_chat - len_chat, 0):
+                    chat = chat_list[i]
+                    print(chat[0] + ":" + chat[1])
+                    self._parse_response(self.on_chat(*chat))
             
             recent_chat = len_chat
             sleep(self.get_rate)
