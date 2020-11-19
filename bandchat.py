@@ -156,6 +156,8 @@ class Client():
             elif res[0] == "change":
                 self.chatURL = res[1]
                 self._refresh()
+            elif res[0] == "delay":
+                sleep(float(res[1]))
     
     def on_event(self, ifunction):
         if ifunction.__name__ == "on_chat":
