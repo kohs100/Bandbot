@@ -80,9 +80,9 @@ def on_ready():
 ```
 @bot.on_event
 def on_chat(usr_i, str_i):
-    if "prefix" not in str_i:
-        res1 = ("chat", f"prefix: Hi, {usr_i}!")
-        res2 = ("chat", f"prefix: You said {str_i}")
+    if str_i.startswith('!bot'):
+        res1 = ("chat", f"Hi, {usr_i}!")
+        res2 = ("chat", f"You said {str_i}")
         return [res1, res2]
     else:
         return []
@@ -92,5 +92,14 @@ def on_chat(usr_i, str_i):
   * Called when client received new chat.
 
 ### Return value
-Return value of event functions is the list of __Chat tuple__
+Return value of event functions is the list of the tuple of response type and content.
 
+#### Response type
+* chat
+  * content: String
+* image
+  * content: String. relative path to image
+* change
+  * content: String. URL of new chatroom
+* delay
+  * content: String. delay time in second(float)

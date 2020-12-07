@@ -27,7 +27,12 @@ class InvalidEventException(BandchatException):
         super().__init__("Invalid on_event name")
 
 class Client():
-    def __init__(self, url, get_rate=0.5, refresh_rate=1800, cli_login=True, options=None):
+    def __init__(self, url,
+                 get_rate=0.5,
+                 refresh_rate=1800,
+                 cli_login=True,
+                 user_data=None,
+                 ):
         self.chatURL = url
         self.refresh_rate = refresh_rate
         self.get_rate = get_rate
@@ -44,6 +49,9 @@ class Client():
         if cli_login:
             options.add_argument("--headless")
             options.add_argument("--disable-gpu")
+        
+        if user_data is not None:
+            options.add_argument(f"--user-data-dir={user_data}")
         
         print("Driver initializing...")
         self.driver = Chrome(options=options)
