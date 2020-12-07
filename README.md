@@ -54,14 +54,15 @@ bot.run()
 
 ## Client
 ```
-class bandchat.Client(url, get_rate=0.5, refresh_rate=1800, cli_login=True)
+class bandchat.Client(url, get_rate=0.5, refresh_rate=1800, cli_login=True, user_data=None)
 ```
 Represents a client connection that connects to band chatting. This class is used to interact with abstracted band chatting interfaces.
 
 * url: string. URL of band chatroom
 * get_rate: float(second). How often to check for new chats
 * refresh_rate: int(second). How often to refresh chatroom
-* cli_login: bool. Disable headless option and cli login feature.
+* cli_login: bool. Disable headless option and cli login feature. You should login manually from chrome then press enter to continue
+* user_data: string. Absolute path to chrome profile directory. e.g. "%localappdata%\\Google\\Chrome\\User Data"
 
 ### Methods
 * Client.run(): Start event loop
@@ -96,20 +97,20 @@ Return value of event functions is the list of tuples of response type and conte
 
 #### Response type
 * chat
-  * content: String
+  * content: string
 ```
 res1 = ("chat", f"Hi, {usr_i}!")
 return [res1]
 ```
 * image
-  * content: String. relative path to image
+  * content: string. relative path to image
 ```
 res1 = ("chat", "this is your image")
 res2 = ("image", "path/to/image.jpg")
 return [res1, res2]
 ```
 * change
-  * content: String. URL of new chatroom
+  * content: string. URL of new chatroom
 ```
 res1 = ("change", "https://band.us/band/77955502/chat/ABCDEF")
 res2 = ("chat", "hello, world!")
@@ -117,7 +118,7 @@ res3 = ("change", "https://band.us/band/77955502/chat/ASDFGH")
 return [res1, res2, res3]
 ```
 * delay
-  * content: String. delay time in second(float)
+  * content: string. delay time in second(float)
 ```
 res1 = ("chat", "How do turtles communicate?")
 res2 = ("delay", "3.2")

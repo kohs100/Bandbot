@@ -71,7 +71,7 @@ class Client():
                 print("Get PhonenumberPage completed.")
                 self.driver.implicitly_wait(3)
 
-                Phonenumber = input("전화번호 입력 :")
+                Phonenumber = input("Phone number: +82")
                 self.driver.find_element_by_id(
                     "input_local_phone_number").send_keys(Phonenumber)
                 self.driver.find_element_by_css_selector(
@@ -79,7 +79,7 @@ class Client():
                 print("Get PasswordPage completed.")
                 self.driver.implicitly_wait(3)
 
-                Password = input("비밀번호 입력 :")
+                Password = input("Password: ")
                 self.driver.find_element_by_id("pw").send_keys(Password)
                 self.driver.find_element_by_css_selector(
                     ".uBtn.-tcType.-confirm").click()
@@ -92,7 +92,7 @@ class Client():
                 print(self.driver.find_element_by_id("hintNumberDiv").text)
                 sleep(20)
             except NoSuchElementException:
-                pw_band = input("인증번호: ")
+                pw_band = input("SMS authcode: ")
                 self.driver.find_element_by_id("code").send_keys(str(pw_band))
                 self.driver.find_element_by_css_selector(
                     "button.uBtn.-tcType.-confirm").click()
