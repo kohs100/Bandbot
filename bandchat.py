@@ -40,9 +40,7 @@ class Client():
         self.on_chat = lambda x,y: []
         self.on_ready = lambda :[]
 
-        if options == None:
-            print("Starting with default chrome options...")
-            options = ChromeOptions()
+        options = ChromeOptions()
 
         options.add_argument('--disable-extensions')
         options.add_argument("--no-sandbox")
