@@ -71,7 +71,7 @@ Represents a client connection that connects to band chatting. This class is use
 ```
 @bot.on_event
 def on_ready():
-    response = ("chat", "prefix: Hello, World!")
+    response = ("chat", "Hello, World!")
     return [response]
 ```
 * on_ready
