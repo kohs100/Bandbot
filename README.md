@@ -92,14 +92,35 @@ def on_chat(usr_i, str_i):
   * Called when client received new chat.
 
 ### Return value
-Return value of event functions is the list of the tuple of response type and content.
+Return value of event functions is the list of tuples of response type and content.
 
 #### Response type
 * chat
   * content: String
+```
+res1 = ("chat", f"Hi, {usr_i}!")
+return [res1]
+```
 * image
   * content: String. relative path to image
+```
+res1 = ("chat", "this is your image")
+res2 = ("image", "path/to/image.jpg")
+return [res1, res2]
+```
 * change
   * content: String. URL of new chatroom
+```
+res1 = ("change", "https://band.us/band/77955502/chat/ABCDEF")
+res2 = ("chat", "hello, world!")
+res3 = ("change", "https://band.us/band/77955502/chat/ASDFGH")
+return [res1, res2, res3]
+```
 * delay
   * content: String. delay time in second(float)
+```
+res1 = ("chat", "How do turtles communicate?")
+res2 = ("delay", "3.2")
+res3 = ("chat", "With shell phones")
+return [res1, res2, res3]
+```
